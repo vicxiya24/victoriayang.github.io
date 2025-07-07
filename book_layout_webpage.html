@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Victoria's Book</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Georgia', serif;
+      background-color: #f8f4ee;
+      overflow-x: hidden;
+    }
+
+    .book-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      perspective: 2000px;
+    }
+
+    .book {
+      width: 90vw;
+      max-width: 1000px;
+      height: 80vh;
+      display: flex;
+      position: relative;
+      background: #fff;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      transform-style: preserve-3d;
+      transition: transform 1s ease;
+    }
+
+    .page {
+      width: 50%;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .left-page, .right-page {
+      flex-shrink: 0;
+    }
+
+    .tab-container {
+      position: absolute;
+      top: 50%;
+      right: -60px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tab {
+      background: #d9bfa3;
+      padding: 0.5rem 1rem;
+      border-radius: 10px 0 0 10px;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      font-weight: bold;
+    }
+
+    .tab:hover {
+      background: #bfa88d;
+    }
+
+    .active {
+      background: #a8917d !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="book-container">
+    <div class="book" id="book">
+      <div class="page left-page" id="leftPage">
+        <h1>Welcome!</h1>
+        <p>This is my personal site, designed as an interactive book. Flip through the pages to learn about me, explore my projects, check my resume, and read my thoughts in the blog!</p>
+      </div>
+      <div class="page right-page" id="rightPage">
+        <h2>Home</h2>
+        <p>Use the tabs to explore each section.</p>
+      </div>
+
+      <div class="tab-container">
+        <div class="tab active" data-page="home">Home</div>
+        <div class="tab" data-page="about">About Me</div>
+        <div class="tab" data-page="projects">Projects</div>
+        <div class="tab" data-page="github">GitHub</div>
+        <div class="tab" data-page="resume">Resume</div>
+        <div class="tab" data-page="blog">Blog</div>
+        <div class="tab" data-page="guestbook">Guestbook</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const leftPage = document.getElementById('leftPage');
+    const rightPage = document.getElementById('rightPage');
+
+    const pages = {
+      home: {
+        left: '<h1>Welcome!</h1><p>This is my personal site, designed as an interactive book. Flip through the pages to learn about me, explore my projects, check my resume, and read my thoughts in the blog!</p>',
+        right: '<h2>Home</h2><p>Use the tabs to explore each section.</p>'
+      },
+      about: {
+        left: '<h1>About Me</h1><p>Data & CS student. Indie dev. Artist. STS nerd. I build with logic and feeling.</p>',
+        right: '<h2>Stats</h2><ul><li>CS + DS @ UW-Madison</li><li>Sticker hoarder</li><li>Writes animatics, not essays (just kidding, both)</li></ul>'
+      },
+      projects: {
+        left: '<h1>Projects</h1><p>From AI Stardew bots to spectral analysis of 34,000 stars. I like strange, ambitious code.</p>',
+        right: '<h2>Highlights</h2><ul><li>Journey of the Prairie King AI</li><li>3D HR Diagram Rebuild</li><li>Fortune of the Souls (Game Dev)</li></ul>'
+      },
+      github: {
+        left: '<h1>GitHub</h1><p>My repos live here. Code, chaos, and creativity.</p>',
+        right: '<h2><a href="https://github.com/victoriayang" target="_blank">Visit GitHub →</a></h2>'
+      },
+      resume: {
+        left: '<h1>Resume</h1><p>Download my resume or browse it interactively.</p>',
+        right: '<h2><a href="resume.pdf" target="_blank">📄 View Resume</a></h2>'
+      },
+      blog: {
+        left: '<h1>Blog</h1><p>Casual thoughts, devlogs, pixel dreams. I design custom posts per entry.</p>',
+        right: '<h2>Recent Posts</h2><ul><li>Why I Love Broken UIs</li><li>Scrapbook Your Portfolio</li><li>Looping Effect in AI</li></ul>'
+      },
+      guestbook: {
+        left: '<h1>Guestbook</h1><p>Leave a message! I’ll read it like a handwritten note passed in class.</p>',
+        right: '<form><label>Name:<br><input type="text" /></label><br><label>Message:<br><textarea rows="5"></textarea></label><br><button type="submit">Sign</button></form>'
+      },
+    };
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const page = tab.getAttribute('data-page');
+        leftPage.innerHTML = pages[page].left;
+        rightPage.innerHTML = pages[page].right;
+      });
+    });
+  </script>
+</body>
+</html>
