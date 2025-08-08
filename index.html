@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Victoria's Book</title>
   <link rel="stylesheet" href="style.css">
   <style>
@@ -12,6 +12,8 @@
       background-color: #f8f4ee;
       overflow-x: hidden;
     }
+
+    * { box-sizing: border-box; }
 
     .book-container {
       display: flex;
@@ -26,24 +28,47 @@
       width: 90vw;
       max-width: 1000px;
       height: 80vh;
-      display: flex;
       position: relative;
+
+      /* 50/50 layout */
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 24px; /* spine gap */
+
       background: #fff;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
       transform-style: preserve-3d;
       transition: transform 1s ease;
     }
 
+    /* optional spine shadow */
+    .book::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 100%;
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.15);
+      pointer-events: none;
+    }
+
     .page {
-      width: 50%;
-      padding: 1rem 2rem;
+      padding: 12px 28px;
       overflow-y: auto;
     }
 
-    .left-page, .right-page {
-      flex-shrink: 0;
-    }
+    /* tighter near the spine, comfier on the outer edges */
+    .left-page  { padding-left: 10px; padding-right: 28px; }
+    .right-page { padding-left: 28px; padding-right: 10px; }
 
+    /* trim heading/paragraph gaps */
+    .page h1, .page h2 { margin: 0 0 12px; }
+    .page p { margin: 0 0 12px; }
+    .page > :first-child { margin-top: 0; }
+
+    /* tab styles */
     .tab-container {
       position: absolute;
       top: 50%;
@@ -52,30 +77,40 @@
       display: flex;
       flex-direction: column;
       gap: 40px;
+      z-index: 2; /* ensure tabs are above book shadow */
     }
 
     .tab {
-      text-align: right;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      min-width: 140px;
+
       background: #d9bfa3;
       padding: 0.5rem 1rem;
       border-radius: 10px 0 0 10px;
       cursor: pointer;
       box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
       font-weight: bold;
+      text-align: right;
     }
 
-    .tab:hover {
-      background: #bfa88d;
-    }
+    .tab:hover { background: #bfa88d; }
+    .active    { background: #a8917d !important; }
 
-    .active {
-      background: #a8917d !important;
-    }
+    /* per-page background themes (replace with your pixel art URLs) */
+    .book.home-theme    { background-image: url('img/home-bg.png');    background-size: cover; background-repeat: no-repeat; }
+    .book.about-theme   { background-image: url('img/about-bg.png');   background-size: cover; background-repeat: no-repeat; }
+    .book.projects-theme{ background-image: url('img/projects-bg.png');background-size: cover; background-repeat: no-repeat; }
+    .book.github-theme  { background-image: url('img/github-bg.png');  background-size: cover; background-repeat: no-repeat; }
+    .book.resume-theme  { background-image: url('img/resume-bg.png');  background-size: cover; background-repeat: no-repeat; }
+    .book.blog-theme    { background-image: url('img/blog-bg.png');    background-size: cover; background-repeat: no-repeat; }
+    .book.guestbook-theme{background-image: url('img/guestbook-bg.png');background-size: cover; background-repeat: no-repeat; }
   </style>
 </head>
 <body>
   <div class="book-container">
-    <div class="book" id="book">
+    <div class="book home-theme" id="book">
       <div class="page left-page" id="leftPage">
         <h1>Welcome!</h1>
         <p>This is my personal site, designed as an interactive book. Flip through the pages to learn about me, explore my projects, check my resume, and read my thoughts in the blog!</p>
@@ -101,6 +136,7 @@
     const tabs = document.querySelectorAll('.tab');
     const leftPage = document.getElementById('leftPage');
     const rightPage = document.getElementById('rightPage');
+    const book = document.getElementById('book');
 
     const pages = {
       home: {
@@ -133,16 +169,22 @@
       },
     };
 
+    function setPage(page) {
+      leftPage.innerHTML = pages[page].left;
+      rightPage.innerHTML = pages[page].right;
+      book.className = `book ${page}-theme`;
+    }
+
     tabs.forEach(tab => {
       tab.addEventListener('click', () => {
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
-
-        const page = tab.getAttribute('data-page');
-        leftPage.innerHTML = pages[page].left;
-        rightPage.innerHTML = pages[page].right;
+        setPage(tab.getAttribute('data-page'));
       });
     });
+
+    // Set default page
+    setPage('home');
   </script>
 </body>
 </html>
