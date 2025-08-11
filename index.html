@@ -294,3 +294,262 @@
 </body>
 </html>
 
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background-color: var(--bg);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; }
+
+    /* ---------- LAYOUT ---------- */
+    .book-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      perspective: 2000px;
+      padding: 16px;
+    }
+
+    .book {
+      width: 90vw;
+      max-width: 1000px;
+      height: 80vh;
+      position: relative;
+
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 24px;
+
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      transform-style: preserve-3d;
+      transition: transform 600ms ease;
+      overflow: hidden;
+    }
+
+    .page {
+      padding: var(--pad-y) var(--pad-x);
+      overflow-y: auto;
+
+      /* subtle entrance */
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .24s ease, transform .24s ease;
+    }
+    .page.visible { opacity: 1; transform: translateY(0); }
+
+    .left-page  { padding-left: 10px; padding-right: var(--pad-x); }
+    .right-page { padding-left: var(--pad-x); padding-right: 10px; }
+
+    .page h1, .page h2 { margin: 0 0 12px; line-height: 1.2; }
+    .page p { margin: 0 0 12px; }
+    .page > :first-child { margin-top: 0; }
+
+    /* ---------- TABS (ACCESSIBLE) ---------- */
+    .tab-container {
+      position: absolute;
+      top: 50%;
+      right: -70px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      z-index: 2;
+    }
+
+    .tab {
+      appearance: none;
+      border: 0;
+      background: var(--tab);
+      color: var(--ink);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      min-width: 140px;
+      padding: .5rem 1rem;
+      border-radius: 10px 0 0 10px;
+      cursor: pointer;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+      font-weight: 700;
+      text-align: right;
+    }
+    .tab:hover { background: var(--tab-hover); }
+    .tab[aria-selected="true"] { background: var(--tab-active); }
+    .tab:focus-visible {
+      outline: 2px solid #6aa7d4;
+      outline-offset: 2px;
+    }
+
+    /* ---------- THEME BACKGROUNDS (fallback gradient + optional image) ---------- */
+    .book.home-theme{
+      background:
+        radial-gradient(1000px 500px at 70% 30%, rgba(255,180,220,.18), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.7)),
+        var(--paper);
+      background-blend-mode: screen, normal, normal;
+      background-image: url('img/home-bg.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+    .book.about-theme   { background-image: url('img/about-bg.png'); background-size: cover; background-repeat: no-repeat; }
+    .book.projects-theme{ background-image: url('img/projects-bg.png'); background-size: cover; background-repeat: no-repeat; }
+    .book.github-theme  { background-image: url('img/github-bg.png'); background-size: cover; background-repeat: no-repeat; }
+    .book.resume-theme  { background-image: url('img/resume-bg.png'); background-size: cover; background-repeat: no-repeat; }
+    .book.blog-theme    { background-image: url('img/blog-bg.png'); background-size: cover; background-repeat: no-repeat; }
+    .book.guestbook-theme{background-image: url('img/guestbook-bg.png'); background-size: cover; background-repeat: no-repeat; }
+
+    /* ---------- MOBILE ---------- */
+    @media (max-width: 768px){
+      .book{
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: 100vh;
+        padding-bottom: 72px;
+      }
+      .tab-container{
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        top: auto;
+        transform: none;
+        gap: 8px;
+      }
+      .tab{ min-width: auto; padding: .5rem .75rem; border-radius: 10px; }
+      .right-page{ padding-left: 10px; padding-right: 10px; }
+    }
+
+    /* ---------- REDUCED MOTION ---------- */
+    @media (prefers-reduced-motion: reduce){
+      .page{ transition: none; transform: none; opacity: 1; }
+      .book{ transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="book-container">
+    <div class="book home-theme" id="book">
+      <!-- We treat the left page as the tabpanel (for ARIA) and keep right page as a sibling region -->
+      <div class="page left-page" id="leftPage" role="tabpanel" aria-labelledby="tab-home"></div>
+      <div class="page right-page" id="rightPage" aria-hidden="false"></div>
+
+      <!-- Accessible tablist -->
+      <div class="tab-container" role="tablist" aria-label="Sections">
+        <button class="tab" role="tab" aria-selected="true"  aria-controls="leftPage" id="tab-home"    data-page="home">Home</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="leftPage" id="tab-about"   data-page="about">About Me</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="leftPage" id="tab-projects"data-page="projects">Projects</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="leftPage" id="tab-github"  data-page="github">GitHub</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="leftPage" id="tab-resume"  data-page="resume">Resume</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="leftPage" id="tab-blog"    data-page="blog">Blog</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="leftPage" id="tab-guestbook"data-page="guestbook">Guestbook</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll('.tab'));
+    const leftPage = document.getElementById('leftPage');
+    const rightPage = document.getElementById('rightPage');
+    const book = document.getElementById('book');
+
+    const pages = {
+      home: {
+        left: '<h1>Welcome!</h1><p>This is my personal site, designed as an interactive book. Flip through the pages to learn about me, explore my projects, check my resume, and read my thoughts in the blog!</p>',
+        right: '<h2>Home</h2><p>Use the tabs to explore each section.</p>'
+      },
+      about: {
+        left: '<h1>About Me</h1><p>Data & CS student. Indie dev. Artist. STS nerd. I build with logic and feeling.</p>',
+        right: '<h2>Stats</h2><ul><li>CS + DS @ UW‑Madison</li><li>Sticker hoarder</li><li>Writes animatics, not essays (jk… both)</li></ul>'
+      },
+      projects: {
+        left: '<h1>Projects</h1><p>From AI Stardew bots to spectral analysis of 34,000 stars. I like strange, ambitious code.</p>',
+        right: '<h2>Highlights</h2><ul><li>Journey of the Prairie King AI</li><li>3D H‑R Diagram Rebuild</li><li>Fortune of the Souls (Game Dev)</li></ul>'
+      },
+      github: {
+        left: '<h1>GitHub</h1><p>My repos live here. Code, chaos, and creativity.</p>',
+        right: '<h2><a href="https://github.com/victoriayang" target="_blank" rel="noopener noreferrer">Visit GitHub →</a></h2>'
+      },
+      resume: {
+        left: '<h1>Resume</h1><p>Download my resume or browse it interactively.</p>',
+        right: '<h2><a href="resume.pdf" target="_blank" rel="noopener noreferrer">📄 View Resume</a></h2>'
+      },
+      blog: {
+        left: '<h1>Blog</h1><p>Casual thoughts, devlogs, pixel dreams. I design custom posts per entry.</p>',
+        right: '<h2>Recent Posts</h2><ul><li>Why I Love Broken UIs</li><li>Scrapbook Your Portfolio</li><li>Looping Effect in AI</li></ul>'
+      },
+      guestbook: {
+        left: '<h1>Guestbook</h1><p>Leave a message! I’ll read it like a handwritten note passed in class.</p>',
+        right: '<form><label>Name<br><input type="text" /></label><br><label>Message<br><textarea rows="5"></textarea></label><br><button type="submit">Sign</button></form>'
+      },
+    };
+
+    function updateTabARIA(activePage){
+      tabs.forEach(t => {
+        const isActive = t.dataset.page === activePage;
+        t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        t.classList.toggle('active', isActive);
+      });
+    }
+
+    function setPage(page, updateHash = true, moveFocus = false) {
+      if (!pages[page]) page = 'home';
+
+      // Swap theme
+      book.className = `book ${page}-theme`;
+
+      // Clear visibility to re-trigger entrance
+      leftPage.classList.remove('visible');
+      rightPage.classList.remove('visible');
+
+      // Swap content (safe because strings are authored by you)
+      leftPage.innerHTML = pages[page].left;
+      rightPage.innerHTML = pages[page].right;
+
+      // Show with animation on next frame
+      requestAnimationFrame(() => {
+        leftPage.classList.add('visible');
+        rightPage.classList.add('visible');
+      });
+
+      updateTabARIA(page);
+
+      if (updateHash) location.hash = page;
+
+      if (moveFocus){
+        const active = tabs.find(t => t.dataset.page === page);
+        if (active) active.focus();
+      }
+    }
+
+    function openFromHash(){
+      const page = (location.hash || '#home').slice(1);
+      setPage(page, false, false);
+    }
+
+    // Click handling
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+      setPage(tab.dataset.page, true, false);
+    }));
+
+    // Arrow key nav between tabs
+    document.querySelector('.tab-container').addEventListener('keydown', (e)=>{
+      if(!['ArrowLeft','ArrowRight'].includes(e.key)) return;
+      const i = tabs.indexOf(document.activeElement);
+      if(i === -1) return;
+      e.preventDefault();
+      const next = e.key === 'ArrowRight' ? (i+1)%tabs.length : (i-1+tabs.length)%tabs.length;
+      tabs[next].focus();
+    });
+
+    // Initialize from hash + listen for back/forward
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
+  </script>
+</body>
+</html>
+
